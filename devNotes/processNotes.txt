@@ -18,3 +18,49 @@ one as well so I would urge you to consider at least doing a rough summary for y
 
 Objective of Study
 ==================
+
+
+
+# What is context in React?
+===========================
+  * Context solves a problem called "prop-drilling".
+
+
+
+# What is prop-drilling?
+========================
+  
+  BUCKET BRIGADE EXAMPLE
+  -==-=-=-=-=-=-=-=-=-=-=-
+  * Think of prop-drilling like a bucket brigade, where each firefighter passes water from the hydrant to the fire, where 
+    the props are the buckets and the components are the people.
+  * So suppose you have a parent component at the root and a component tree. That parent component at the root makes an application
+    request and stores it in state. That parent then renders components that render components. This large tree of components all have
+    an API response in state in the root component.
+  * The inefficient way to get the API request from the root component to the later-later-later-later component would be to: First
+    pass the API results (the bucket) from the state to the first (A) direct child component as props. Then, you would need to pass the
+    props to B, then to C, then to D, etc.
+
+    [Parent Component] -->  [Child Component A] --> [Child Component B] --> [Child Component C] --> [Child Component D]
+
+  * This passing of the props from the parent to the child at the end (D) is called prop drilling.
+
+
+   social media icon EXAMPLE
+   -=-=-=-=-=-=-=-=-=-=-=-=-
+   * In this example, picture a social media website with an icon in the top right corner that says how many unread messages you have and 
+     messages widget to read the messages.
+   * Icon and messages both need access to the same information, which is the API request. 
+   * Howwever, the only commmon ancestor is App... so App needs to make the API request.
+
+                          **Icon** (4)
+                            |
+                          NotificationArea (3)             Messages(3)
+                            |                                 |
+              LeftSide    RightSide (2)                   FriendList(2)
+                  \       /                                   |
+                    TopBar (1)                             SideBar(1)     Content
+                      |                                      /            /
+                      |______________________________________|____________|
+                                           |
+                                          App
