@@ -103,25 +103,186 @@ Objective of Study
   
 
   1. Start with the file containing the object fo text displayed for each language.
-
-
-
-
-  1. Start with a component
+    * The "labguageSpecificCopy" here has object hard coded selections.
     --------------------------------------------------------------------------------------
-        import React, { Component } from "react"
-
-        export default class AppLang extends Component {
-          render() {
-            return (
-              <div className='AppLang'>
-                App context
-              </div>
-            );
-          }
+        const languageSpecificCopy = {
+          'en-GB': {
+            title: 'Good Morro Old Chap!',
+            body: 'Dolor sit amet consectetur adipisicing elit. Expedita....'
+          },
+          'en-US': {
+            title: 'Howdy Partner!',
+            body: 'Dolor sit amet consectetur adipisicing elit. Expedita ....'
+          },
+          'ko': {
+            title: '폴더 목록',
+            body: '당근은 리베이트를 강화. 를 가졌어요. 여기에도시에 열립니다이 ....'
+          },
         }
-    --------------------------------------------------------------------------------------
 
-  2. 
+        export default languageSpecificCopy
+    --------------------------------------------------------------------------------------
 
   
+  2. Create the Child, GrandChild, and GreatGrandChild components:
+  
+    GreatGrandChild
+    -------------------------------------------------------------------------------------
+      import React, { Component } from 'react'
+      import languageSpecificCopy from './languageSpecificCopy'
+
+      class GreatGrandChild extends Component {
+        render() {
+          const copy = languageSpecificCopy['en-US'] || {}                                   // As a safety nest, use "|| {}" to avoid "undefined" if a key does not exist.
+          return (
+            <section>
+              <h2>{copy.title}</h2>
+              <p>{copy.body}</p>
+            </section>
+          )
+        }
+      }
+
+      export default GreatGrandChild
+    -------------------------------------------------------------------------------------
+
+    GrandChild:
+    -------------------------------------------------------------------------------------
+      import React from 'react'
+      import GreatGrandChild from './GreatGrandChild'
+
+      export default function GrandChild() {
+        return (
+          <div className='GrandChild'>
+            <GreatGrandChild />
+          </div>
+        );
+      }
+    -------------------------------------------------------------------------------------
+
+    Child:
+    -------------------------------------------------------------------------------------
+    import React from 'react'
+      import GrandChild from './GrandChild'
+
+      export default function Child() {
+        return (
+          <main role='main' className='Child'>
+            <GrandChild />
+          </main>
+        );
+      }
+    -------------------------------------------------------------------------------------
+
+
+
+
+3. Create an AppLang component:
+    -------------------------------------------------------------------------------------
+      import React, { Component } from "react"
+      import Child from './Child'
+
+      export default class AppLang extends Component {
+        render() {
+          return (
+            <div className='AppLang'>
+              <Child />                                                                      // Child component to connect all the components together.
+            </div>
+          );
+        }
+      }
+    -------------------------------------------------------------------------------------
+
+
+
+
+4. Create a LangControls component thast contains the buttons for switching between languages:
+  ----------------------------------------------------------------------------------------
+    import React from 'react'
+
+    export default function LangControls(props) {
+      return (
+        <>
+          <button>
+            British{' '}
+            <span role='img' aria-label='en-GB'>🇬🇧</span>
+          </button>
+          {' '}
+          <button>
+            American{' '}
+            <span role='img' aria-label='en-US'>🇺🇸</span>
+          </button>
+          {' '}
+          <button>
+            Korean{' '}
+            <span role='img' aria-label='ko'>🇰🇷</span>
+          </button>
+        </>
+      );
+    }
+  ----------------------------------------------------------------------------------------
+  and of course, import LangControls to the AppLang component:
+  -----------------------------------------------------------------------------------------
+    import React, { Component } from "react"
+    import Child from './Child'
+    import LangControls from './LangControls'                                              // imported LangControls
+
+    export default class AppLang extends Component {
+      render() {
+        return (
+          <div className='AppLang'>
+            <LangControls />                                                                // LangControls component
+            <Child />
+          </div>
+        );
+      }
+    }
+  -----------------------------------------------------------------------------------------
+
+
+
+5. Create the context.
+  * So what we want here is for the language to be controlled by the buttons and update the deeply nested
+    GreatGrandChild component WITHOUT having to prop-drill.
+  * To do this, we need the language to be the data that we can control.
+
+  USE createContext FOR CONTEXT implementation
+  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  * React supplies a function called "createContext", which is what we will use to make our context.
+  * You can supply a default value as an argument, so it will be "indow.navigator.language".
+
+  In the study, we'll make a file called "LanguageContext" to set the default argument for the language:
+    ---------------------------------------------------------------------------------------
+      import React from 'react'
+
+      const LanguageContext = React.createContext({
+        lang: window.navigator.language
+      })
+
+      export default LanguageContext
+    ----------------------------------------------------------------------------------------
+
+    With this, you can refactor the GreatGrandChild componentto use the language from context and also 
+    update the LangControls component to disable the button that is currently active.
+
+    So first, you need to import the LanguageContext to the GreatGrandChild component:
+    ---------------------------------------------------------------------------------------
+      import React, { Component } from 'react'
+      import languageSpecificCopy from './languageSpecificCopy'
+      import LanguageContext from './LanguageContext'
+
+      class GreatGrandChild extends Component {
+        static contextType = LanguageContext;
+        render() {
+          const copy = languageSpecificCopy['en-US'] || {}
+          return (
+            <section>
+              <h2>{copy.title}</h2>
+              <p>{copy.body}</p>
+            </section>
+          )
+        }
+      }
+
+      export default GreatGrandChild
+    ---------------------------------------------------------------------------------------
