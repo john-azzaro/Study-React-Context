@@ -84,5 +84,44 @@ Objective of Study
       * Relay
       * Apollo
 
+
+
+
+
+# How do you implement context in a react application?
+======================================================
+  * For this study, we'll create a small application that changes the language of buttons.
+  * For this study, we'll also have deeply nested components to try the implementation of context:
+
+                                        GreatGrandChild
+                                        |
+                                      GrandChild
+                                        |
+                      LangControls    Child
+                            \          /
+                                App
   
+
+  1. Start with the file containing the object fo text displayed for each language.
+
+
+
+
+  1. Start with a component
+    --------------------------------------------------------------------------------------
+        import React, { Component } from "react"
+
+        export default class AppLang extends Component {
+          render() {
+            return (
+              <div className='AppLang'>
+                App context
+              </div>
+            );
+          }
+        }
+    --------------------------------------------------------------------------------------
+
+  2. 
+
   
