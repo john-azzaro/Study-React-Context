@@ -21,10 +21,6 @@ Objective of Study
 
 
 
-# What is context in React?
-===========================
-  * Context solves a problem called "prop-drilling".
-
 
 
 # What is prop-drilling?
@@ -53,6 +49,8 @@ Objective of Study
    * Icon and messages both need access to the same information, which is the API request. 
    * Howwever, the only commmon ancestor is App... so App needs to make the API request.
 
+   * If you PROP-DRILL the API request, as props, you would go through 4 layers to get that information to icon and 3 layers to get to messages.
+
                           **Icon** (4)
                             |
                           NotificationArea (3)             Messages(3)
@@ -64,3 +62,27 @@ Objective of Study
                       |______________________________________|____________|
                                            |
                                           App
+
+   
+# What is context in React?
+===========================
+  * Context solves a problem called "prop-drilling".
+  * Context has a global-like quality, meaning that data can be accessed at many components throughout the application.
+  * For example, you could use context for:
+      * the currently logged in user's profile information.
+      * the current theme for the website.
+      * the current language that the website should be displayed in.
+      * the permissions the current user has to use website features.
+
+  * Context is best used when the data is required by many components and helps solve the problem of prop-drilling.
+
+  * There are many different solutions to prop-drilling using third-party libraries. For example, you could use: 
+      * Redux
+      * MobX
+      * Rx
+      * Flux
+      * Relay
+      * Apollo
+
+  
+  
