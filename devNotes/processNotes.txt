@@ -18,8 +18,16 @@ one as well so I would urge you to consider at least doing a rough summary for y
 
 Objective of Study
 ==================
+Context is a React feature that helps you with data thats shared between multiple components in a global like quality.
+As opposed to this, you would have to "prop-drill", meaning that you would have to pass your props to each and every component
+in a chain all the way to something like a great-great-great-great-ggreat grand child to access data. Nos so with context.
 
+To read context in a component, you can use a "static" on a class or a render prop as children to a Context.Consumer (the context being the 
+information accessed and the .consumer method being the means to access the component via context.)
 
+When using the render prop, you pass a function as a prop to a component, and the return value from the function will be JSX elements.
+When using Context.consumer, the render prop we pass in will be given the value stored in context as an argumen to use when deciding on
+what JSX to return.
 
 
 
@@ -87,9 +95,20 @@ Objective of Study
 
 
 
+# How many ways can you read context?
+=====================================
+  * Two different ways to read context:
+    1. read context using static contextType.
+    2. reading context by using a render prop.
 
-# How do you implement context in a react application?
-======================================================
+
+# How do you READ context in a react application using static contextType?
+===========================================================================
+  * Reading context using static context type is is one of two ways to read ocntext in react applications.
+  * However, keep in mind that static contextTyp does not work in every situation. For example, it does not
+    work on function components and does not work when you need to read multiple contexts.
+  
+  
   * For this study, we'll create a small application that changes the language of buttons.
   * For this study, we'll also have deeply nested components to try the implementation of context:
 
@@ -252,10 +271,11 @@ Objective of Study
   * You can supply a default value as an argument, so it will be "indow.navigator.language".
 
   In the study, we'll make a file called "LanguageContext" to set the default argument for the language:
+    * This includes the "createContext"!!!
     ---------------------------------------------------------------------------------------
       import React from 'react'
 
-      const LanguageContext = React.createContext({
+      const LanguageContext = React.createContext({                                            // React.createContext for the default language.
         lang: window.navigator.language
       })
 
@@ -265,16 +285,18 @@ Objective of Study
     With this, you can refactor the GreatGrandChild componentto use the language from context and also 
     update the LangControls component to disable the button that is currently active.
 
-    So first, you need to import the LanguageContext to the GreatGrandChild component:
+
+    USE static contextType to use context in your component
+    -=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     ---------------------------------------------------------------------------------------
       import React, { Component } from 'react'
       import languageSpecificCopy from './languageSpecificCopy'
-      import LanguageContext from './LanguageContext'
+      import LanguageContext from './LanguageContext'                                       // context imported (LanguageContext)
 
       class GreatGrandChild extends Component {
-        static contextType = LanguageContext;
+        static contextType = LanguageContext;                                               // context assigned the static propety "contextType" witht he imported context.
         render() {
-          const copy = languageSpecificCopy['en-US'] || {}
+          const copy = languageSpecificCopy[this.context.lang] || {}                        // 'this.context.lang' (context becomes a new property, which is an object with a key of lang)
           return (
             <section>
               <h2>{copy.title}</h2>
@@ -286,3 +308,56 @@ Objective of Study
 
       export default GreatGrandChild
     ---------------------------------------------------------------------------------------
+
+
+
+
+
+# How do you read context with render props?
+============================================
+  * Another way to read context instead of using static contextType is using a RENDER PROP.
+  * As previously mentioned, using static contextType is not supported on function components and does not
+    work when you need to read multiple contexts.
+  * For this, you need to read context by using a render prop.
+
+
+  * A render prop is a prop that is a function (like a callback) which you return JSX from. 
+  * Often the children prop is used as the render prop but it cant be any named prop.
+
+  * You can combine context with render props to read data out of the context. 
+  * The method is to use a CONTEXT CONSUMER.
+  * Every context you create has a component called "consumer" that you can use with JSX.
+
+
+  -------------------------------------------------------------------------------------
+      export default function LangControls(props) {
+      return (
+        <LanguageContext.Consumer>                                                      // "LanguageContext.consumer" component wraps around...
+          {(value) => {                                                                 // ... and a function with "value" as an argument to the render prop.
+            return (
+              <>
+                <button>
+                  British{" "}
+                  <span role="img" aria-label="en-GB">
+                    🇬🇧
+                  </span>
+                </button>{" "}
+                <button>
+                  American{" "}
+                  <span role="img" aria-label="en-US">
+                    🇺🇸
+                  </span>
+                </button>{" "}
+                <button>
+                  Korean{" "}
+                  <span role="img" aria-label="ko">
+                    🇰🇷
+                  </span>
+                </button>
+              </>
+            );
+          }}
+        </LanguageContext.Consumer>
+      );
+    }
+  -------------------------------------------------------------------------------------
